@@ -1,0 +1,4 @@
+#define BCAST_PORT 45555
+#define REQ_MAGIC "MARCO_BROADCAST"
+#define REQ_MAGIC_LEN sizeof(REQ_MAGIC)
+#define RESP_MAX 512
