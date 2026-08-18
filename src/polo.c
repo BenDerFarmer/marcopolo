@@ -18,8 +18,8 @@ int build_info_string(char *buf, size_t buflen) {
   if (uname(&u) != 0)
     return -1;
 
-  return snprintf(buf, buflen, "host=%s sys=%s node=%s release=%s arch=%s",
-                  host, u.sysname, u.nodename, u.release, u.machine);
+  return snprintf(buf, buflen, "host=%s sys=%s release=%s arch=%s", host,
+                  u.sysname, u.release, u.machine);
 }
 
 int main(int argc, char *argv[]) {
