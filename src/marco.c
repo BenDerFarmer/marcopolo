@@ -41,9 +41,7 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    printf("Received packet from %s:%d\n", inet_ntoa(si_server.sin_addr),
-           ntohs(si_server.sin_port));
-    printf("Data: %s\n", buf);
+    printf("ip=%s %s\n", inet_ntoa(si_server.sin_addr), buf);
   }
 
   close(s);

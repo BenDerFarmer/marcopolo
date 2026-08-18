@@ -5,7 +5,22 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/utsname.h>
 #include <unistd.h>
+
+int build_info_string(char *buf, size_t buflen) {
+  struct utsname u;
+  char host[256];
+
+  if (gethostname(host, sizeof(host)) != 0)
+    return -1;
+
+  if (uname(&u) != 0)
+    return -1;
+
+  return snprintf(buf, buflen, "host=%s sys=%s node=%s release=%s arch=%s",
+                  host, u.sysname, u.nodename, u.release, u.machine);
+}
 
 int main(int argc, char *argv[]) {
   (void)argc;
@@ -16,6 +31,14 @@ int main(int argc, char *argv[]) {
 
   int recv_len, si_client_len = sizeof(si_client);
   char buf[RESP_MAX] = {0};
+
+  char msg[512];
+  if (build_info_string(msg, sizeof(msg)) < 0) {
+    perror("Error while build info_string");
+    return 1;
+  }
+
+  int msg_len = strlen(msg);
 
   int s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (s == -1) {
@@ -51,8 +74,8 @@ int main(int argc, char *argv[]) {
     printf("Received packet from %s:%d\n", inet_ntoa(si_client.sin_addr),
            ntohs(si_client.sin_port));
 
-    if (sendto(s, REQ_MAGIC, REQ_MAGIC_LEN, 0,
-               (const struct sockaddr *)&si_client, si_client_len) == -1) {
+    if (sendto(s, msg, msg_len, 0, (const struct sockaddr *)&si_client,
+               si_client_len) == -1) {
       perror("Error while sending data");
       return 1;
     }
